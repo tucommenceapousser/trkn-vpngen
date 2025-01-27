@@ -3,23 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Outil VPN CLI développé par TRHACKNON pour gérer facilement des connexions VPN via WireGuard et OpenVPN depuis le terminal.">
+  <meta name="author" content="TRHACKNON">
+  <meta property="og:title" content="Outil VPN CLI - TRHACKNON">
+  <meta property="og:description" content="Un outil puissant et flexible pour gérer des connexions VPN via WireGuard et OpenVPN.">
+  <meta property="og:image" content="https://h.top4top.io/p_33147h2fw0.jpg">
+  <meta property="og:url" content="https://tucommenceapousser.github.io/trkn-vpngen/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Outil VPN CLI - TRHACKNON">
+  <meta name="twitter:description" content="Un utilitaire puissant pour gérer les connexions VPN via WireGuard et OpenVPN.">
+  <meta name="twitter:image" content="https://h.top4top.io/p_33147h2fw0.jpg">
+  <meta name="twitter:site" content="@TRHACKNON">
   <title>Outil VPN CLI - TRHACKNON</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       background-color: #111;
       color: #fff;
       margin: 0;
       padding: 0;
+      line-height: 1.6;
     }
     h1, h2 {
       color: #00FF00;
+      text-shadow: 2px 2px 5px rgba(0, 255, 0, 0.7);
     }
     a {
       color: #00FF00;
+      text-decoration: none;
+    }
+    a:hover {
+      color: #009900;
     }
     .container {
       padding: 20px;
+      max-width: 960px;
+      margin: 0 auto;
     }
     .center {
       text-align: center;
@@ -30,6 +49,7 @@
       padding: 10px 20px;
       text-decoration: none;
       border-radius: 5px;
+      font-weight: bold;
     }
     .button:hover {
       background-color: #009900;
@@ -39,6 +59,18 @@
       padding: 10px;
       border-radius: 5px;
       overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+    }
+    hr {
+      border: 1px solid #00FF00;
+      margin: 20px 0;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.9rem;
+      color: #aaa;
     }
   </style>
 </head>
@@ -52,7 +84,7 @@
 
     <h1>🚀 Outil VPN CLI - TRHACKNON</h1>
     <p>Bienvenue dans l'outil VPN CLI développé par <strong>TRHACKNON</strong> !</p>
-    <p>Un utilitaire puissant et flexible permettant de gérer facilement des connexions VPN via <strong>WireGuard</strong> et <strong>OpenVPN</strong>. Tout cela directement depuis ton terminal, dans une interface fluide et intuitive.</p>
+    <p>Un utilitaire puissant et flexible permettant de gérer facilement des connexions VPN via <strong>WireGuard</strong> et <strong>OpenVPN</strong> directement depuis ton terminal, avec une interface fluide et intuitive.</p>
 
     <hr>
 
@@ -66,7 +98,7 @@
     </ul>
 
     <h2>🎨 Installation</h2>
-    <p>Avant d'installer l'outil, assure-toi d'avoir <strong>Python</strong> et <strong>pip</strong> d'installés sur ta machine. Ensuite, installe les dépendances nécessaires avec :</p>
+    <p>Avant d'installer l'outil, assure-toi d'avoir <strong>Python</strong> et <strong>pip</strong> installés sur ta machine. Ensuite, installe les dépendances nécessaires avec :</p>
     <pre><code>pip install -r requirements.txt</code></pre>
     <p>Une fois les dépendances installées, tu es prêt à utiliser l'outil !</p>
 
@@ -86,33 +118,33 @@
     <pre><code>python vpn_tool.py --gen-keys /path/to/output/dir</code></pre>
 
     <h3>🔹 Créer une configuration client WireGuard</h3>
-    <p>Si tu veux générer une configuration pour un client WireGuard, tu dois entrer l'adresse IP du serveur, le port, ta clé privée, et la clé publique du serveur. Le fichier de configuration sera généré à l'endroit que tu indiques :</p>
+    <p>Pour générer une configuration pour un client WireGuard, entre l'adresse IP du serveur, le port, ta clé privée, et la clé publique du serveur :</p>
     <pre><code>python vpn_tool.py --wg-client-config <SERVER_IP> <PORT> <PRIVATE_KEY> <PUBLIC_KEY> <OUTPUT_FILE></code></pre>
 
     <h3>🔹 Ajouter un serveur (multi-serveurs)</h3>
-    <p>Ajoute un serveur VPN dans un fichier JSON avec cette commande :</p>
+    <p>Ajoute un serveur VPN dans un fichier JSON :</p>
     <pre><code>python vpn_tool.py --add-server "server_name" "server_ip" "tcp/udp" "port"</code></pre>
 
     <hr>
 
     <h2>⚙️ Détails techniques</h2>
     <h3>Génération des clés WireGuard</h3>
-    <p>Cet outil utilise la commande <code>wg</code> pour générer les clés privées et publiques de WireGuard. Le processus crée un fichier <code>privatekey</code> et un fichier <code>publickey</code> que tu peux utiliser dans la configuration de ton serveur.</p>
+    <p>L'outil utilise la commande <code>wg</code> pour générer les clés privées et publiques de WireGuard. Le processus crée un fichier <code>privatekey</code> et un fichier <code>publickey</code> que tu peux utiliser dans la configuration de ton serveur.</p>
 
     <h3>Création de la configuration client WireGuard</h3>
     <p>La fonction <code>create_wireguard_client_config</code> génère un fichier de configuration <code>.conf</code> pour un client WireGuard, avec les clés privées et publiques, l'adresse IP du serveur, et les paramètres nécessaires pour établir une connexion VPN.</p>
 
     <h3>Gestion des serveurs</h3>
-    <p>L'outil permet de gérer plusieurs serveurs VPN dans un fichier JSON. Tu peux ajouter un serveur avec des informations telles que le nom, l'adresse IP, le protocole et le port. Ces informations sont stockées de manière structurée pour être facilement accessibles et gérables.</p>
+    <p>Tu peux gérer plusieurs serveurs VPN dans un fichier JSON avec ce fichier. Chaque serveur est ajouté avec des informations structurées telles que le nom, l'adresse IP, le protocole et le port.</p>
 
     <hr>
 
     <h2>🛠️ Flexibilité</h2>
-    <p>L'outil a été conçu pour être flexible à utiliser, avec un menu interactif et des options intuitives. Tu peux choisir les différentes actions via des menus, rendant l'expérience plus agréable et interactive !</p>
+    <p>L'outil a été conçu pour être flexible à utiliser, avec un menu interactif et des options intuitives, rendant l'expérience plus agréable et interactive !</p>
 
     <hr>
 
-    <h2>📄 License</h2>
+    <h2>📄 Licence</h2>
     <p>Cet outil est distribué sous la licence <strong>MIT</strong>. Si tu as des suggestions ou des améliorations à proposer, n'hésite pas à ouvrir une issue ou à soumettre une pull request !</p>
 
     <hr>
@@ -121,6 +153,10 @@
     <p>Amuse-toi bien et sois sécurisé en ligne ! 🚀</p>
 
   </div>
+
+  <footer>
+    <p>&copy; 2025 TRHACKNON. Tous droits réservés.</p>
+  </footer>
 
 </body>
 </html>
