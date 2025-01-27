@@ -3,6 +3,7 @@ import subprocess
 import argparse
 import qrcode
 import json
+import questionary
 
 
 # Installation des paquets nécessaires
@@ -16,12 +17,20 @@ def install_vpn(tool):
         print("[!] Outil non supporté.")
 
 
-# Génération des clés pour WireGuard
-def generate_wireguard_keys(output_dir):
+# Génération des clés WireGuard avec possibilité d'auto-signature
+def generate_wireguard_keys(output_dir, autosign=False):
     os.makedirs(output_dir, exist_ok=True)
     print("[*] Génération des clés WireGuard...")
     subprocess.run(f"wg genkey | tee {output_dir}/privatekey | wg pubkey > {output_dir}/publickey", shell=True)
-    print(f"[*] Clés générées dans {output_dir}")
+
+    if autosign:
+        print("[*] Génération d'une clé publique auto-signée...")
+        with open(f"{output_dir}/privatekey", "r") as f:
+            private_key = f.read().strip()
+        subprocess.run(f"echo '{private_key}' | wg pubkey > {output_dir}/autosigned_publickey", shell=True)
+        print(f"[✓] Clé publique auto-signée sauvegardée dans {output_dir}/autosigned_publickey")
+
+    print(f"[✓] Clés générées dans {output_dir}")
 
 
 # Création de configuration WireGuard client avec QR Code
@@ -40,7 +49,7 @@ PersistentKeepalive = 25
 """
     with open(output_file, "w") as f:
         f.write(config)
-    print(f"[*] Configuration client écrite dans {output_file}")
+    print(f"[✓] Configuration client écrite dans {output_file}")
 
     # Génération d'un QR code
     print("[*] Génération du QR code pour la configuration WireGuard...")
@@ -49,22 +58,15 @@ PersistentKeepalive = 25
     qr.print_ascii()
 
 
-# Création de configuration OpenVPN (serveur/client)
-def create_openvpn_config():
-    print("[*] Génération d'une configuration OpenVPN...")
-    os.makedirs("/etc/openvpn/easy-rsa", exist_ok=True)
-    subprocess.run("make-cadir /etc/openvpn/easy-rsa", shell=True)
-    print("[*] Utilisez les scripts Easy-RSA pour générer la configuration serveur et client.")
+# Ajout interactif d'un serveur au fichier JSON
+def add_server_interactive(config_file="servers.json"):
+    print("[*] Ajout d'un nouveau serveur.")
+    server_name = questionary.text("Nom du serveur :").ask()
+    server_ip = questionary.text("IP du serveur :").ask()
+    protocol = questionary.select("Protocole :", choices=["TCP", "UDP"]).ask()
+    port = questionary.text("Port :").ask()
 
-
-# Récupération des statistiques WireGuard (IP connectées, trafic)
-def get_wireguard_stats(interface):
-    print(f"[*] Statistiques pour l'interface {interface}...")
-    result = subprocess.run(f"wg show {interface}", shell=True, capture_output=True, text=True)
-    if result.returncode == 0:
-        print(result.stdout)
-    else:
-        print("[!] Impossible de récupérer les statistiques. Assurez-vous que WireGuard est configuré.")
+    add_server_to_config(server_name, server_ip, protocol, port, config_file=config_file)
 
 
 # Gestion multi-serveurs (fichier JSON)
@@ -84,33 +86,75 @@ def add_server_to_config(server_name, server_ip, protocol, port, config_file="se
 
     with open(config_file, "w") as f:
         json.dump(servers, f, indent=4)
-    print(f"[*] Serveur {server_name} ajouté au fichier {config_file}")
+    print(f"[✓] Serveur {server_name} ajouté au fichier {config_file}")
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Outil VPN CLI pour cybersécurité.")
+# Menu interactif
+def interactive_menu():
+    while True:
+        action = questionary.select(
+            "Que voulez-vous faire ?",
+            choices=[
+                "Installer un VPN",
+                "Générer des clés WireGuard",
+                "Créer une configuration client WireGuard",
+                "Ajouter un serveur (multi-serveurs)",
+                "Quitter"
+            ]
+        ).ask()
+
+        if action == "Installer un VPN":
+            vpn = questionary.select("Quel outil VPN ?", choices=["wireguard", "openvpn"]).ask()
+            install_vpn(vpn)
+
+        elif action == "Générer des clés WireGuard":
+            output_dir = questionary.text("Répertoire de sortie des clés :").ask()
+            autosign = questionary.confirm("Voulez-vous générer une clé publique auto-signée ?").ask()
+            generate_wireguard_keys(output_dir, autosign)
+
+        elif action == "Créer une configuration client WireGuard":
+            server_ip = questionary.text("Adresse IP du serveur :").ask()
+            port = questionary.text("Port :").ask()
+            private_key = questionary.text("Clé privée :").ask()
+            public_key = questionary.text("Clé publique du serveur :").ask()
+            output_file = questionary.text("Nom du fichier de configuration :").ask()
+            create_wireguard_client_config(server_ip, port, private_key, public_key, output_file)
+
+        elif action == "Ajouter un serveur (multi-serveurs)":
+            add_server_interactive()
+
+        elif action == "Quitter":
+            print("Au revoir !")
+            break
+
+
+# Fonction principale
+def main():
+    parser = argparse.ArgumentParser(description="Outil VPN CLI par TRHACKNON.")
     parser.add_argument("--install", choices=["wireguard", "openvpn"], help="Installer WireGuard ou OpenVPN.")
     parser.add_argument("--gen-keys", metavar="DIR", help="Générer des clés WireGuard.")
     parser.add_argument("--wg-client-config", nargs=5, metavar=("SERVER_IP", "PORT", "PRIVATE_KEY", "PUBLIC_KEY", "OUTPUT"),
                         help="Créer une configuration client WireGuard.")
-    parser.add_argument("--openvpn-config", action="store_true", help="Générer une configuration OpenVPN.")
-    parser.add_argument("--stats", metavar="INTERFACE", help="Afficher les statistiques WireGuard.")
     parser.add_argument("--add-server", nargs=4, metavar=("NAME", "IP", "PROTOCOL", "PORT"),
                         help="Ajouter un serveur au fichier de configuration multi-serveurs.")
+    parser.add_argument("--interactive", action="store_true", help="Lancer l'outil en mode interactif.")
 
     args = parser.parse_args()
 
-    if args.install:
+    # Mode interactif si demandé
+    if args.interactive:
+        interactive_menu()
+    elif args.install:
         install_vpn(args.install)
     elif args.gen_keys:
         generate_wireguard_keys(args.gen_keys)
     elif args.wg_client_config:
         create_wireguard_client_config(*args.wg_client_config)
-    elif args.openvpn_config:
-        create_openvpn_config()
-    elif args.stats:
-        get_wireguard_stats(args.stats)
     elif args.add_server:
         add_server_to_config(*args.add_server)
     else:
         parser.print_help()
+
+
+if __name__ == "__main__":
+    main()
