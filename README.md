@@ -3,22 +3,27 @@
 <p align="center">
   <img src="https://h.top4top.io/p_33147h2fw0.jpg" alt="Logo" width="300"/>
 </p>
-Bienvenue dans l'outil VPN CLI par **TRHACKNON** !  
-Un outil ultra puissant et fun pour gérer tes connexions VPN avec des options flexibles pour WireGuard et OpenVPN. Tout ça, directement depuis ton terminal !
+
+Bienvenue dans l'**outil VPN CLI** développé par **TRHACKNON** !  
+Un utilitaire puissant et flexible permettant de gérer facilement des connexions VPN via **WireGuard** et **OpenVPN**. Tout cela directement depuis ton terminal, dans une interface fluide et intuitive.
+
+---
 
 ## 🛠️ **Fonctionnalités**
 
-Voici ce que tu peux faire avec cet outil magique : 
+Voici ce que cet outil te permet de faire :
 
-- **Installer un VPN** : Tu peux installer facilement **WireGuard** ou **OpenVPN** sur ta machine.
-- **Générer des clés WireGuard** : Crée des clés privées et publiques pour ton serveur WireGuard.
-- **Créer une configuration client WireGuard** : Génère automatiquement une configuration client pour te connecter à ton serveur WireGuard via un fichier `.conf`.
-- **Gérer des serveurs** : Ajoute de manière interactive des serveurs VPN dans un fichier JSON pour les gérer facilement.
-- **Mode interactif** : Si tu veux un peu plus de fun, lance l'outil en mode interactif et choisis tes actions avec des menus.
+- **Installer un VPN** : Installe **WireGuard** ou **OpenVPN** de manière simple et rapide sur ta machine.
+- **Générer des clés WireGuard** : Crée des clés privées et publiques pour ton serveur WireGuard en quelques commandes.
+- **Créer une configuration client WireGuard** : Génère une configuration client avec un fichier `.conf` pour te connecter à ton serveur WireGuard.
+- **Gérer des serveurs VPN** : Ajoute et gère facilement tes serveurs VPN dans un fichier JSON.
+- **Mode interactif** : Utilise un mode interactif pour naviguer entre les options via un menu simple et agréable.
+
+---
 
 ## 🎨 **Installation**
 
-Avant tout, assure-toi d'avoir **Python** et **pip** installés sur ta machine. Ensuite, installe les dépendances :
+Avant d'installer l'outil, assure-toi d'avoir **Python** et **pip** d'installés sur ta machine. Ensuite, installe les dépendances nécessaires avec :
 
 ```bash
 pip install -r requirements.txt
