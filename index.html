@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outil VPN CLI - TRHACKNON</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+    h1, h2 {
+      color: #00FF00;
+    }
+    a {
+      color: #00FF00;
+    }
+    .container {
+      padding: 20px;
+    }
+    .center {
+      text-align: center;
+    }
+    .button {
+      background-color: #00FF00;
+      color: #111;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .button:hover {
+      background-color: #009900;
+    }
+    pre {
+      background-color: #222;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="center">
+      <img src="https://h.top4top.io/p_33147h2fw0.jpg" alt="Logo" width="300" />
+    </div>
+
+    <h1>🚀 Outil VPN CLI - TRHACKNON</h1>
+    <p>Bienvenue dans l'outil VPN CLI développé par <strong>TRHACKNON</strong> !</p>
+    <p>Un utilitaire puissant et flexible permettant de gérer facilement des connexions VPN via <strong>WireGuard</strong> et <strong>OpenVPN</strong>. Tout cela directement depuis ton terminal, dans une interface fluide et intuitive.</p>
+
+    <hr>
+
+    <h2>🛠️ Fonctionnalités</h2>
+    <ul>
+      <li>Installer un VPN : Installe <strong>WireGuard</strong> ou <strong>OpenVPN</strong> de manière simple et rapide sur ta machine.</li>
+      <li>Générer des clés WireGuard : Crée des clés privées et publiques pour ton serveur WireGuard en quelques commandes.</li>
+      <li>Créer une configuration client WireGuard : Génère une configuration client avec un fichier <code>.conf</code> pour te connecter à ton serveur WireGuard.</li>
+      <li>Gérer des serveurs VPN : Ajoute et gère facilement tes serveurs VPN dans un fichier JSON.</li>
+      <li>Mode interactif : Utilise un mode interactif pour naviguer entre les options via un menu simple et agréable.</li>
+    </ul>
+
+    <h2>🎨 Installation</h2>
+    <p>Avant d'installer l'outil, assure-toi d'avoir <strong>Python</strong> et <strong>pip</strong> d'installés sur ta machine. Ensuite, installe les dépendances nécessaires avec :</p>
+    <pre><code>pip install -r requirements.txt</code></pre>
+    <p>Une fois les dépendances installées, tu es prêt à utiliser l'outil !</p>
+
+    <h2>🏃‍♂️ Utilisation rapide</h2>
+    <p>Lance l'outil via la ligne de commande avec l'une de ces options :</p>
+
+    <h3>🔹 Mode interactif</h3>
+    <pre><code>python vpn_tool.py --interactive</code></pre>
+
+    <h3>🔹 Installer un VPN</h3>
+    <p>Tu peux installer <strong>WireGuard</strong> ou <strong>OpenVPN</strong> :</p>
+    <pre><code>python vpn_tool.py --install wireguard</code></pre>
+    <pre><code>python vpn_tool.py --install openvpn</code></pre>
+
+    <h3>🔹 Générer des clés WireGuard</h3>
+    <p>Si tu veux générer des clés WireGuard, spécifie un répertoire de sortie :</p>
+    <pre><code>python vpn_tool.py --gen-keys /path/to/output/dir</code></pre>
+
+    <h3>🔹 Créer une configuration client WireGuard</h3>
+    <p>Si tu veux générer une configuration pour un client WireGuard, tu dois entrer l'adresse IP du serveur, le port, ta clé privée, et la clé publique du serveur. Le fichier de configuration sera généré à l'endroit que tu indiques :</p>
+    <pre><code>python vpn_tool.py --wg-client-config <SERVER_IP> <PORT> <PRIVATE_KEY> <PUBLIC_KEY> <OUTPUT_FILE></code></pre>
+
+    <h3>🔹 Ajouter un serveur (multi-serveurs)</h3>
+    <p>Ajoute un serveur VPN dans un fichier JSON avec cette commande :</p>
+    <pre><code>python vpn_tool.py --add-server "server_name" "server_ip" "tcp/udp" "port"</code></pre>
+
+    <hr>
+
+    <h2>⚙️ Détails techniques</h2>
+    <h3>Génération des clés WireGuard</h3>
+    <p>Cet outil utilise la commande <code>wg</code> pour générer les clés privées et publiques de WireGuard. Le processus crée un fichier <code>privatekey</code> et un fichier <code>publickey</code> que tu peux utiliser dans la configuration de ton serveur.</p>
+
+    <h3>Création de la configuration client WireGuard</h3>
+    <p>La fonction <code>create_wireguard_client_config</code> génère un fichier de configuration <code>.conf</code> pour un client WireGuard, avec les clés privées et publiques, l'adresse IP du serveur, et les paramètres nécessaires pour établir une connexion VPN.</p>
+
+    <h3>Gestion des serveurs</h3>
+    <p>L'outil permet de gérer plusieurs serveurs VPN dans un fichier JSON. Tu peux ajouter un serveur avec des informations telles que le nom, l'adresse IP, le protocole et le port. Ces informations sont stockées de manière structurée pour être facilement accessibles et gérables.</p>
+
+    <hr>
+
+    <h2>🎉 Fun et personnalisation</h2>
+    <p>L'outil a été conçu pour être flexible et amusant à utiliser, avec un menu interactif et des options intuitives. Tu peux choisir les différentes actions via des menus, rendant l'expérience plus agréable et interactive !</p>
+
+    <hr>
+
+    <h2>📄 License</h2>
+    <p>Cet outil est distribué sous la licence <strong>MIT</strong>. Si tu as des suggestions ou des améliorations à proposer, n'hésite pas à ouvrir une issue ou à soumettre une pull request !</p>
+
+    <hr>
+
+    <p>Merci d'avoir utilisé l'outil VPN CLI de <strong>TRHACKNON</strong> !</p>
+    <p>Amuse-toi bien et sois sécurisé en ligne ! 🚀</p>
+
+  </div>
+
+</body>
+</html>
