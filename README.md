@@ -3,7 +3,19 @@
 <p align="center">
   <img src="https://h.top4top.io/p_33147h2fw0.jpg" alt="Logo" width="300"/>
 </p>
-<a href="http://trkn-vpn.0delta.cz">README PAGE</a>
+
+## Lien vers le projet GitHub
+
+Clique sur le bouton ci-dessous pour accéder au code source complet de ce projet sur GitHub:
+
+[![GitHub](https://img.shields.io/badge/GitHub-TRHACKNON-green)](http://trkn-vpn.0delta.cz)
+
+## Lien vers le projet GitHub
+
+Accède au code source complet sur GitHub avec le bouton ci-dessous:
+
+[![Accéder au GitHub](https://commons.wikimedia.org/wiki/File:A_Hacker_Works_at_a_COmputer_in_a_Dark_Room.png)](http://trkn-vpn.0delta.cz)
+
 Bienvenue dans l'**outil VPN CLI** développé par **TRHACKNON** !  
 Un utilitaire puissant et flexible permettant de gérer facilement des connexions VPN via **WireGuard** et **OpenVPN**. Tout cela directement depuis ton terminal, dans une interface fluide et intuitive.
 
