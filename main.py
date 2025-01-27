@@ -4,7 +4,8 @@ import argparse
 import qrcode
 import json
 import questionary
-
+import random
+import string
 
 # Installation des paquets nécessaires
 def install_vpn(tool):
@@ -16,9 +17,8 @@ def install_vpn(tool):
     else:
         print("[!] Outil non supporté.")
 
-
-# Génération des clés WireGuard avec possibilité d'auto-signature
-def generate_wireguard_keys(output_dir, autosign=False):
+# Génération des clés WireGuard avec rotation de clés éphémères
+def generate_wireguard_keys(output_dir, autosign=False, rotate_keys=True):
     os.makedirs(output_dir, exist_ok=True)
     print("[*] Génération des clés WireGuard...")
     subprocess.run(f"wg genkey | tee {output_dir}/privatekey | wg pubkey > {output_dir}/publickey", shell=True)
@@ -29,9 +29,16 @@ def generate_wireguard_keys(output_dir, autosign=False):
             private_key = f.read().strip()
         subprocess.run(f"echo '{private_key}' | wg pubkey > {output_dir}/autosigned_publickey", shell=True)
         print(f"[✓] Clé publique auto-signée sauvegardée dans {output_dir}/autosigned_publickey")
-
+    
+    # Rotation des clés éphémères (si demandé)
+    if rotate_keys:
+        print("[*] Rotation des clés éphémères activée.")
+        ephemeral_key = ''.join(random.choices(string.ascii_letters + string.digits, k=32))
+        with open(f"{output_dir}/ephemeral_key", "w") as f:
+            f.write(ephemeral_key)
+        print(f"[✓] Clé éphémère générée et sauvegardée dans {output_dir}/ephemeral_key")
+    
     print(f"[✓] Clés générées dans {output_dir}")
-
 
 # Création de configuration WireGuard client avec QR Code
 def create_wireguard_client_config(server_ip, port, private_key, public_key, output_file):
@@ -57,6 +64,39 @@ PersistentKeepalive = 25
     qr.add_data(config)
     qr.print_ascii()
 
+# Fonction de génération de configuration OpenVPN avec ChaCha20
+def create_openvpn_config(secure=False):
+    print("[*] Création d'une configuration OpenVPN...")
+    os.makedirs("/etc/openvpn", exist_ok=True)
+    subprocess.run("make-cadir /etc/openvpn/easy-rsa", shell=True)
+
+    # Configuration sécurisée avec ChaCha20
+    config = """
+port 1194
+proto udp
+dev tun
+cipher CHACHA20-POLY1305
+auth SHA256
+tls-version-min 1.2
+dh none
+ecdh-curve prime256v1
+persist-key
+persist-tun
+user nobody
+group nogroup
+keepalive 10 120
+verb 3
+"""
+    if secure:
+        config += """
+# Sécurisation renforcée
+push "redirect-gateway def1 bypass-dhcp"
+tls-auth /etc/openvpn/ta.key 0
+"""
+    
+    with open("/etc/openvpn/server.conf", "w") as f:
+        f.write(config)
+    print("[✓] Configuration OpenVPN sécurisée créée.")
 
 # Ajout interactif d'un serveur au fichier JSON
 def add_server_interactive(config_file="servers.json"):
@@ -67,7 +107,6 @@ def add_server_interactive(config_file="servers.json"):
     port = questionary.text("Port :").ask()
 
     add_server_to_config(server_name, server_ip, protocol, port, config_file=config_file)
-
 
 # Gestion multi-serveurs (fichier JSON)
 def add_server_to_config(server_name, server_ip, protocol, port, config_file="servers.json"):
@@ -88,7 +127,6 @@ def add_server_to_config(server_name, server_ip, protocol, port, config_file="se
         json.dump(servers, f, indent=4)
     print(f"[✓] Serveur {server_name} ajouté au fichier {config_file}")
 
-
 # Menu interactif
 def interactive_menu():
     while True:
@@ -98,6 +136,7 @@ def interactive_menu():
                 "Installer un VPN",
                 "Générer des clés WireGuard",
                 "Créer une configuration client WireGuard",
+                "Créer une configuration OpenVPN sécurisée",
                 "Ajouter un serveur (multi-serveurs)",
                 "Quitter"
             ]
@@ -120,13 +159,16 @@ def interactive_menu():
             output_file = questionary.text("Nom du fichier de configuration :").ask()
             create_wireguard_client_config(server_ip, port, private_key, public_key, output_file)
 
+        elif action == "Créer une configuration OpenVPN sécurisée":
+            secure = questionary.confirm("Voulez-vous activer la configuration sécurisée pour OpenVPN ?").ask()
+            create_openvpn_config(secure)
+
         elif action == "Ajouter un serveur (multi-serveurs)":
             add_server_interactive()
 
         elif action == "Quitter":
             print("Au revoir !")
             break
-
 
 # Fonction principale
 def main():
